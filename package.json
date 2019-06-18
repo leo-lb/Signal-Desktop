@@ -43,7 +43,7 @@
     "ready": "yarn clean-transpile && yarn grunt && yarn lint && yarn test-node && yarn test-electron && yarn lint-deps"
   },
   "dependencies": {
-    "@journeyapps/sqlcipher": "3.2.1",
+    "@journeyapps/sqlcipher": "leo-lb/node-sqlcipher#ppc64le",
     "@sindresorhus/is": "0.8.0",
     "backbone": "1.3.3",
     "blob-util": "1.3.0",
