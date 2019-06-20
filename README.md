@@ -1,3 +1,7 @@
+# How to build and run on ppc64le
+
+* Check the `ppc64le_build.bash` and `ppc64le_run.bash` scripts.
+
 [![Build Status](https://travis-ci.org/signalapp/Signal-Desktop.svg?branch=master)](https://travis-ci.org/signalapp/Signal-Desktop)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/signalapp/Signal-Desktop?branch=master&svg=true)](https://ci.appveyor.com/project/Signal-Desktop/signal-desktop)
 
