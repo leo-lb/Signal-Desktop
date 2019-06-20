@@ -9,8 +9,9 @@ wget "https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz"
 tar -xJvf node-$VERSION-$DISTRO.tar.xz
 PATH=$(pwd)/node-$VERSION-$DISTRO/bin:$PATH
 
-sudo npm install -g yarn gulp electron-rebuild
+which yarn || sudo npm install -g yarn 
+which gulp || sudo npm install -g gulp
+which electron-build || sudo npm install -g electron-rebuild
 
 yarn install
 yarn grunt
-yarn icon-gen
