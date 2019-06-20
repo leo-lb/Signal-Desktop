@@ -62,7 +62,6 @@ const development = config.environment === 'development';
 //   data directory has been set.
 const attachments = require('./app/attachments');
 const attachmentChannel = require('./app/attachment_channel');
-const updater = require('./ts/updater/index');
 const createTrayIcon = require('./app/tray_icon');
 const dockIcon = require('./app/dock_icon');
 const ephemeralConfig = require('./app/ephemeral_config');

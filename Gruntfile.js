@@ -3,7 +3,6 @@ const packageJson = require('./package.json');
 const importOnce = require('node-sass-import-once');
 const rimraf = require('rimraf');
 const mkdirp = require('mkdirp');
-const spectron = require('spectron');
 const asar = require('asar');
 const fs = require('fs');
 const assert = require('assert');
