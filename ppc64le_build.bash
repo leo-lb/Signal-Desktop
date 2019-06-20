@@ -11,7 +11,7 @@ PATH=$(pwd)/node-$VERSION-$DISTRO/bin:$PATH
 
 which yarn || sudo npm install -g yarn 
 which gulp || sudo npm install -g gulp
-which electron-build || sudo npm install -g electron-rebuild
+which electron-rebuild || sudo npm install -g electron-rebuild
 
 yarn install
 yarn grunt
