@@ -2,7 +2,7 @@
 
 set -eux
 
-VERSION=v10.13.0
+VERSION=v12.4.0
 DISTRO=linux-ppc64le
 
 wget "https://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.xz"
