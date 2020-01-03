@@ -77,6 +77,16 @@
       return { toastMessage: i18n('voiceNoteMustBeOnlyAttachment') };
     },
   });
+  Whisper.ConversationArchivedToast = Whisper.ToastView.extend({
+    render_attributes() {
+      return { toastMessage: i18n('conversationArchived') };
+    },
+  });
+  Whisper.ConversationUnarchivedToast = Whisper.ToastView.extend({
+    render_attributes() {
+      return { toastMessage: i18n('conversationReturnedToInbox') };
+    },
+  });
 
   const MAX_MESSAGE_BODY_LENGTH = 64 * 1024;
   Whisper.MessageBodyTooLongToast = Whisper.ToastView.extend({
@@ -142,6 +152,28 @@
       this.listenTo(this.model, 'scroll-to-message', this.scrollToMessage);
       this.listenTo(this.model, 'unload', reason =>
         this.unload(`model trigger - ${reason}`)
+      );
+      this.listenTo(this.model, 'focus-composer', this.focusMessageField);
+      this.listenTo(this.model, 'open-all-media', this.showAllMedia);
+      this.listenTo(this.model, 'begin-recording', this.captureAudio);
+      this.listenTo(this.model, 'attach-file', this.onChooseAttachment);
+      this.listenTo(this.model, 'escape-pressed', this.resetPanel);
+      this.listenTo(this.model, 'show-message-details', this.showMessageDetail);
+      this.listenTo(this.model, 'toggle-reply', messageId => {
+        const target = this.quote || !messageId ? null : messageId;
+        this.setQuoteMessage(target);
+      });
+      this.listenTo(
+        this.model,
+        'save-attachment',
+        this.downloadAttachmentWrapper
+      );
+      this.listenTo(this.model, 'delete-message', this.deleteMessage);
+      this.listenTo(this.model, 'remove-link-review', this.removeLinkPreview);
+      this.listenTo(
+        this.model,
+        'remove-all-draft-attachments',
+        this.clearAttachments
       );
 
       // Events on Message models - we still listen to these here because they
@@ -272,9 +304,8 @@
           onShowSafetyNumber: () => {
             this.showSafetyNumber();
           },
-          onShowAllMedia: async () => {
-            await this.showAllMedia();
-            this.updateHeader();
+          onShowAllMedia: () => {
+            this.showAllMedia();
           },
           onShowGroupMembers: async () => {
             await this.showMembers();
@@ -282,15 +313,24 @@
           },
           onGoBack: () => {
             this.resetPanel();
-            this.updateHeader();
           },
 
           onArchive: () => {
-            this.unload('archive');
             this.model.setArchived(true);
+            this.model.trigger('unload', 'archive');
+
+            Whisper.ToastView.show(
+              Whisper.ConversationArchivedToast,
+              document.body
+            );
           },
           onMoveToInbox: () => {
             this.model.setArchived(false);
+
+            Whisper.ToastView.show(
+              Whisper.ConversationUnarchivedToast,
+              document.body
+            );
           },
         };
       };
@@ -323,6 +363,7 @@
         onSubmit: message => this.sendMessage(message),
         onEditorStateChange: (msg, caretLocation) =>
           this.onEditorStateChange(msg, caretLocation),
+        onTextTooLong: () => this.showToast(Whisper.MessageBodyTooLongToast),
         onChooseAttachment: this.onChooseAttachment.bind(this),
         micCellEl,
         attachmentListEl,
@@ -441,7 +482,7 @@
             id,
             models.map(model => model.getReduxData()),
             isNewMessage,
-            document.hasFocus()
+            window.isActive()
           );
         } catch (error) {
           setMessagesLoading(conversationId, true);
@@ -492,7 +533,7 @@
             id,
             models.map(model => model.getReduxData()),
             isNewMessage,
-            document.hasFocus()
+            window.isActive()
           );
         } catch (error) {
           setMessagesLoading(conversationId, false);
@@ -501,10 +542,8 @@
           finish();
         }
       };
-      const markMessageRead = async (messageId, forceFocus) => {
-        // We need a forceFocus parameter because the BrowserWindow focus event fires
-        //   before the document realizes that it has focus.
-        if (!document.hasFocus() && !forceFocus) {
+      const markMessageRead = async messageId => {
+        if (!window.isActive()) {
           return;
         }
 
@@ -656,12 +695,13 @@
 
         const cleaned = await this.cleanModels(all);
         this.model.messageCollection.reset(cleaned);
+        const scrollToMessageId = disableScroll ? undefined : messageId;
 
         messagesReset(
           conversationId,
           cleaned.map(model => model.getReduxData()),
           metrics,
-          disableScroll ? undefined : messageId
+          scrollToMessageId
         );
       } catch (error) {
         setMessagesLoading(conversationId, false);
@@ -671,7 +711,7 @@
       }
     },
 
-    async loadNewestMessages(newestMessageId) {
+    async loadNewestMessages(newestMessageId, setFocus) {
       const {
         messagesReset,
         setMessagesLoading,
@@ -702,7 +742,9 @@
         const metrics = await getMessageMetricsForConversation(conversationId);
 
         if (scrollToLatestUnread && metrics.oldestUnread) {
-          this.loadAndScroll(metrics.oldestUnread.id, { disableScroll: true });
+          this.loadAndScroll(metrics.oldestUnread.id, {
+            disableScroll: !setFocus,
+          });
           return;
         }
 
@@ -713,11 +755,14 @@
 
         const cleaned = await this.cleanModels(messages);
         this.model.messageCollection.reset(cleaned);
+        const scrollToMessageId =
+          setFocus && metrics.newest ? metrics.newest.id : undefined;
 
         messagesReset(
           conversationId,
           cleaned.map(model => model.getReduxData()),
-          metrics
+          metrics,
+          scrollToMessageId
         );
       } catch (error) {
         setMessagesLoading(conversationId, false);
@@ -763,22 +808,29 @@
         conversationUnloaded(this.model.id);
       }
 
-      if (this.model.hasDraft()) {
-        this.model.set({
-          draftTimestamp: Date.now(),
-          timestamp: Date.now(),
-        });
-
-        this.model.updateLastMessage();
+      if (this.model.get('draftChanged')) {
+        if (this.model.hasDraft()) {
+          this.model.set({
+            draftChanged: false,
+            draftTimestamp: Date.now(),
+            timestamp: Date.now(),
+          });
+        } else {
+          this.model.set({
+            draftChanged: false,
+            draftTimestamp: null,
+          });
+        }
 
         // We don't wait here; we need to take down the view
         this.saveModel();
-      } else {
+
         this.model.updateLastMessage();
       }
 
       this.titleView.remove();
       this.timelineView.remove();
+      this.compositionAreaView.remove();
 
       if (this.attachmentListView) {
         this.attachmentListView.remove();
@@ -913,11 +965,29 @@
       });
 
       const onSave = caption => {
-        // eslint-disable-next-line no-param-reassign
-        attachment.caption = caption;
+        this.model.set({
+          draftAttachments: this.model.get('draftAttachments').map(item => {
+            if (
+              (item.path && item.path === attachment.path) ||
+              (item.screenshotPath &&
+                item.screenshotPath === attachment.screenshotPath)
+            ) {
+              return {
+                ...attachment,
+                caption,
+              };
+            }
+
+            return item;
+          }),
+          draftChanged: true,
+        });
+
         this.captionEditorView.remove();
         Signal.Backbone.Views.Lightbox.hide();
-        this.attachmentListView.update(this.getPropsForAttachmentList());
+
+        this.updateAttachmentsView();
+        this.saveModel();
       };
 
       this.captionEditorView = new Whisper.ReactWrapperView({
@@ -939,7 +1009,7 @@
     },
 
     async saveModel() {
-      await window.Signal.Data.updateConversation(
+      window.Signal.Data.updateConversation(
         this.model.id,
         this.model.attributes,
         {
@@ -954,6 +1024,7 @@
       const draftAttachments = this.model.get('draftAttachments') || [];
       this.model.set({
         draftAttachments: [...draftAttachments, onDisk],
+        draftChanged: true,
       });
       await this.saveModel();
 
@@ -968,6 +1039,7 @@
           draftAttachments,
           item => item.path === attachment.path
         ),
+        draftChanged: true,
       });
 
       this.updateAttachmentsView();
@@ -982,6 +1054,7 @@
       const draftAttachments = this.model.get('draftAttachments') || [];
       this.model.set({
         draftAttachments: [],
+        draftChanged: true,
       });
 
       this.updateAttachmentsView();
@@ -1033,7 +1106,7 @@
       }
 
       return {
-        ..._.pick(attachment, ['contentType', 'fileName', 'size']),
+        ..._.pick(attachment, ['contentType', 'fileName', 'size', 'caption']),
         data,
       };
     },
@@ -1169,7 +1242,7 @@
         return;
       }
 
-      this.addAttachment(attachment);
+      await this.addAttachment(attachment);
     },
 
     isSizeOkay(attachment) {
@@ -1245,30 +1318,38 @@
     async handleImageAttachment(file) {
       if (MIME.isJPEG(file.type)) {
         const rotatedDataUrl = await window.autoOrientImage(file);
-        const rotatedBlob = VisualAttachment.dataURLToBlobSync(rotatedDataUrl);
-        const { contentType, file: resizedBlob } = await this.autoScale({
+        const rotatedBlob = window.dataURLToBlobSync(rotatedDataUrl);
+        const {
+          contentType,
+          file: resizedBlob,
+          fileName,
+        } = await this.autoScale({
           contentType: file.type,
-          rotatedBlob,
+          fileName: file.name,
+          file: rotatedBlob,
         });
         const data = await await VisualAttachment.blobToArrayBuffer(
           resizedBlob
         );
 
         return {
-          fileName: file.name,
+          fileName: fileName || file.name,
           contentType,
           data,
           size: data.byteLength,
         };
       }
 
-      const { contentType, file: resizedBlob } = await this.autoScale({
-        contentType: file.type,
-        file,
-      });
+      const { contentType, file: resizedBlob, fileName } = await this.autoScale(
+        {
+          contentType: file.type,
+          fileName: file.name,
+          file,
+        }
+      );
       const data = await await VisualAttachment.blobToArrayBuffer(resizedBlob);
       return {
-        fileName: file.name,
+        fileName: fileName || file.name,
         contentType,
         data,
         size: data.byteLength,
@@ -1276,7 +1357,7 @@
     },
 
     autoScale(attachment) {
-      const { contentType, file } = attachment;
+      const { contentType, file, fileName } = attachment;
       if (
         contentType.split('/')[0] !== 'image' ||
         contentType === 'image/tiff'
@@ -1341,7 +1422,7 @@
 
           resolve({
             ...attachment,
-            fileName: this.fixExtension(attachment.fileName, targetContentType),
+            fileName: this.fixExtension(fileName, targetContentType),
             contentType: targetContentType,
             file: blob,
           });
@@ -1450,7 +1531,13 @@
     },
 
     captureAudio(e) {
-      e.preventDefault();
+      if (e) {
+        e.preventDefault();
+      }
+
+      if (this.compositionApi.current.isDirty()) {
+        return;
+      }
 
       if (this.hasFiles()) {
         this.showToast(Whisper.VoiceNoteMustBeOnlyAttachmentToast);
@@ -1472,6 +1559,7 @@
       view.on('send', this.handleAudioCapture.bind(this));
       view.on('closed', this.endCaptureAudio.bind(this));
       view.$el.appendTo(this.$('.capture-audio'));
+      view.$('.finish').focus();
       this.compositionApi.current.setMicActive(true);
 
       this.disableMessageField();
@@ -1492,12 +1580,18 @@
         flags: textsecure.protobuf.AttachmentPointer.Flags.VOICE_MESSAGE,
       };
 
+      // Note: The RecorderView removes itself on send
+      this.captureAudioView = null;
+
       this.sendMessage();
     },
     endCaptureAudio() {
       this.enableMessageField();
       this.$('.microphone').show();
+
+      // Note: The RecorderView removes itself on close
       this.captureAudioView = null;
+
       this.compositionApi.current.setMicActive(false);
     },
 
@@ -1546,6 +1640,10 @@
     },
 
     async showAllMedia() {
+      if (this.panels && this.panels.length > 0) {
+        return;
+      }
+
       // We fetch more documents than media as they don’t require to be loaded
       // into memory right away. Revisit this once we have infinite scrolling:
       const DEFAULT_MEDIA_FETCH_COUNT = 50;
@@ -1692,6 +1790,7 @@
       this.listenTo(this.model.messageCollection, 'remove', update);
 
       this.listenBack(view);
+      this.updateHeader();
     },
 
     focusMessageField() {
@@ -1751,9 +1850,7 @@
       const contact = ConversationController.get(contactId);
       const message = this.model.messageCollection.get(messageId);
       if (!message) {
-        throw new Error(
-          `deleteMessage: Did not find message for id ${messageId}`
-        );
+        throw new Error(`forceSend: Did not find message for id ${messageId}`);
       }
 
       const dialog = new Whisper.ConfirmationDialogView({
@@ -1798,6 +1895,27 @@
         this.listenBack(view);
         this.updateHeader();
       }
+    },
+
+    downloadAttachmentWrapper(messageId) {
+      const message = this.model.messageCollection.get(messageId);
+      if (!message) {
+        throw new Error(
+          `downloadAttachmentWrapper: Did not find message for id ${messageId}`
+        );
+      }
+
+      const { attachments, sent_at: timestamp } = message.attributes;
+      if (!attachments || attachments.length < 1) {
+        return;
+      }
+
+      const attachment = attachments[0];
+      const { fileName } = attachment;
+
+      const isDangerous = window.Signal.Util.isFileDangerous(fileName || '');
+
+      this.downloadAttachment({ attachment, timestamp, isDangerous });
     },
 
     downloadAttachment({ attachment, timestamp, isDangerous }) {
@@ -1877,6 +1995,8 @@
         return {
           objectURL: getAbsoluteTempPath(path),
           contentType,
+          onSave: null, // important so download button is omitted
+          isViewOnce: true,
         };
       };
       this.lightboxView = new Whisper.ReactWrapperView({
@@ -1907,7 +2027,6 @@
           message.trigger('unload');
           this.model.messageCollection.remove(message.id);
           this.resetPanel();
-          this.updateHeader();
         },
       });
 
@@ -2044,10 +2163,13 @@
         );
       }
 
+      if (!message.isNormalBubble()) {
+        return;
+      }
+
       const onClose = () => {
         this.stopListening(message, 'change', update);
         this.resetPanel();
-        this.updateHeader();
       };
 
       const props = message.getPropsForMessageDetail();
@@ -2074,7 +2196,6 @@
         JSX: Signal.State.Roots.createStickerManager(window.reduxStore),
         onClose: () => {
           this.resetPanel();
-          this.updateHeader();
         },
       });
 
@@ -2089,7 +2210,7 @@
         className: 'contact-detail-pane panel',
         props: {
           contact,
-          signalAccount,
+          hasSignalAccount: Boolean(signalAccount),
           onSendMessage: () => {
             if (signalAccount) {
               this.openConversation(signalAccount);
@@ -2098,7 +2219,6 @@
         },
         onClose: () => {
           this.resetPanel();
-          this.updateHeader();
         },
       });
 
@@ -2112,6 +2232,11 @@
 
     listenBack(view) {
       this.panels = this.panels || [];
+
+      if (this.panels.length === 0) {
+        this.previousFocus = document.activeElement;
+      }
+
       this.panels.unshift(view);
       view.$el.insertAfter(this.$('.panel').last());
       view.$el.one('animationend', () => {
@@ -2125,11 +2250,23 @@
 
       const view = this.panels.shift();
 
+      if (
+        this.panels.length === 0 &&
+        this.previousFocus &&
+        this.previousFocus.focus
+      ) {
+        this.previousFocus.focus();
+        this.previousFocus = null;
+      }
+
       if (this.panels.length > 0) {
         this.panels[0].$el.fadeIn(250);
       }
+      this.updateHeader();
+
       view.$el.addClass('panel--remove').one('transitionend', () => {
         view.remove();
+
         if (this.panels.length === 0) {
           // Make sure poppers are positioned properly
           window.dispatchEvent(new Event('resize'));
@@ -2153,9 +2290,8 @@
       try {
         await this.confirm(i18n('deleteConversationConfirmation'));
         try {
-          this.unload('delete messages');
+          this.model.trigger('unload', 'delete messages');
           await this.model.destroyMessages();
-          Whisper.events.trigger('unloadConversation', this.model.id);
           this.model.updateLastMessage();
         } catch (error) {
           window.log.error(
@@ -2254,37 +2390,44 @@
     },
 
     async setQuoteMessage(messageId) {
+      const model = messageId
+        ? await getMessageById(messageId, {
+            Message: Whisper.Message,
+          })
+        : null;
+
+      if (model && !model.isNormalBubble()) {
+        return;
+      }
+
       this.quote = null;
       this.quotedMessage = null;
+      this.quoteHolder = null;
 
       const existing = this.model.get('quotedMessageId');
       if (existing !== messageId) {
         this.model.set({
           quotedMessageId: messageId,
+          draftChanged: true,
         });
 
         await this.saveModel();
       }
 
-      if (this.quoteHolder) {
-        this.quoteHolder.unload();
-        this.quoteHolder = null;
+      if (this.quoteView) {
+        this.quoteView.remove();
+        this.quoteView = null;
       }
 
-      if (messageId) {
-        const model = await getMessageById(messageId, {
-          Message: Whisper.Message,
-        });
-        if (model) {
-          const message = MessageController.register(model.id, model);
-          this.quotedMessage = message;
+      if (model) {
+        const message = MessageController.register(model.id, model);
+        this.quotedMessage = message;
 
-          if (message) {
-            const quote = await this.model.makeQuote(this.quotedMessage);
-            this.quote = quote;
+        if (message) {
+          const quote = await this.model.makeQuote(this.quotedMessage);
+          this.quote = quote;
 
-            this.focusMessageFieldAndClearDisabled();
-          }
+          this.focusMessageFieldAndClearDisabled();
         }
       }
 
@@ -2326,6 +2469,8 @@
         props: Object.assign({}, props, {
           withContentAbove: true,
           onClose: () => {
+            // This can't be the normal 'onClose' because that is always run when this
+            //   view is removed from the DOM, and would clear the draft quote.
             this.setQuoteMessage(null);
           },
         }),
@@ -2426,16 +2571,20 @@
       if (this.model.get('draft') && (!messageText || trimmed.length === 0)) {
         this.model.set({
           draft: null,
+          draftChanged: true,
         });
         await this.saveModel();
 
         return;
       }
 
-      this.model.set({
-        draft: messageText,
-      });
-      await this.saveModel();
+      if (messageText !== this.model.get('draft')) {
+        this.model.set({
+          draft: messageText,
+          draftChanged: true,
+        });
+        await this.saveModel();
+      }
     },
 
     maybeGrabLinkPreview(message, caretLocation) {

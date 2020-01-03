@@ -47,6 +47,10 @@ const startInTray = process.argv.some(arg => arg === '--start-in-tray');
 const usingTrayIcon =
   startInTray || process.argv.some(arg => arg === '--use-tray-icon');
 
+const disableFlashFrame = process.argv.some(
+  arg => arg === '--disable-flash-frame'
+);
+
 const config = require('./app/config');
 
 // Very important to put before the single instance check, since it is based on the
@@ -107,7 +111,7 @@ if (!process.mas) {
     console.log('quitting; we are the second instance');
     app.exit();
   } else {
-    app.on('second-instance', () => {
+    app.on('second-instance', (e, argv) => {
       // Someone tried to run a second instance, we should focus our window
       if (mainWindow) {
         if (mainWindow.isMinimized()) {
@@ -116,6 +120,12 @@ if (!process.mas) {
 
         showWindow();
       }
+      // Are they trying to open a sgnl link?
+      const incomingUrl = getIncomingUrl(argv);
+      if (incomingUrl) {
+        handleSgnlLink(incomingUrl);
+      }
+      // Handled
       return true;
     });
   }
@@ -161,11 +171,15 @@ function prepareURL(pathSegments, moreKeys) {
   });
 }
 
-function handleUrl(event, target) {
+async function handleUrl(event, target) {
   event.preventDefault();
   const { protocol } = url.parse(target);
   if (protocol === 'http:' || protocol === 'https:') {
-    shell.openExternal(target);
+    try {
+      await shell.openExternal(target);
+    } catch (error) {
+      console.log(`Failed to open url: ${error.stack}`);
+    }
   }
 }
 
@@ -229,14 +243,7 @@ function createWindow() {
       },
       icon: path.join(__dirname, 'images', 'icon_256.png'),
     },
-    _.pick(windowConfig, [
-      'maximized',
-      'autoHideMenuBar',
-      'width',
-      'height',
-      'x',
-      'y',
-    ])
+    _.pick(windowConfig, ['autoHideMenuBar', 'width', 'height', 'x', 'y'])
   );
 
   if (!_.isNumber(windowOptions.width) || windowOptions.width < MIN_WIDTH) {
@@ -244,9 +251,6 @@ function createWindow() {
   }
   if (!_.isNumber(windowOptions.height) || windowOptions.height < MIN_HEIGHT) {
     windowOptions.height = DEFAULT_HEIGHT;
-  }
-  if (!_.isBoolean(windowOptions.maximized)) {
-    delete windowOptions.maximized;
   }
   if (!_.isBoolean(windowOptions.autoHideMenuBar)) {
     delete windowOptions.autoHideMenuBar;
@@ -265,10 +269,6 @@ function createWindow() {
     delete windowOptions.y;
   }
 
-  if (windowOptions.fullscreen === false) {
-    delete windowOptions.fullscreen;
-  }
-
   logger.info(
     'Initializing BrowserWindow config: %s',
     JSON.stringify(windowOptions)
@@ -276,6 +276,12 @@ function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow(windowOptions);
+  if (windowConfig && windowConfig.maximized) {
+    mainWindow.maximize();
+  }
+  if (windowConfig && windowConfig.fullscreen) {
+    mainWindow.setFullScreen(true);
+  }
 
   function captureAndSaveWindowStats() {
     if (!mainWindow) {
@@ -289,17 +295,12 @@ function createWindow() {
     windowConfig = {
       maximized: mainWindow.isMaximized(),
       autoHideMenuBar: mainWindow.isMenuBarAutoHide(),
+      fullscreen: mainWindow.isFullScreen(),
       width: size[0],
       height: size[1],
       x: position[0],
       y: position[1],
     };
-
-    if (mainWindow.isFullScreen()) {
-      // Only include this property if true, because when explicitly set to
-      // false the fullscreen button will be disabled on osx
-      windowConfig.fullscreen = true;
-    }
 
     logger.info(
       'Updating BrowserWindow config: %s',
@@ -395,13 +396,18 @@ ipc.on('show-window', () => {
   showWindow();
 });
 
-ipc.once('ready-for-updates', async () => {
+let isReadyForUpdates = false;
+async function readyForUpdates() {
+  if (isReadyForUpdates) {
+    return;
+  }
+
+  isReadyForUpdates = true;
+
   // First, install requested sticker pack
-  if (process.argv.length > 1) {
-    const [incomingUrl] = process.argv;
-    if (incomingUrl.startsWith('sgnl://')) {
-      handleSgnlLink(incomingUrl);
-    }
+  const incomingUrl = getIncomingUrl(process.argv);
+  if (incomingUrl) {
+    handleSgnlLink(incomingUrl);
   }
 
   // Second, start checking for app updates
@@ -413,7 +419,12 @@ ipc.once('ready-for-updates', async () => {
       error && error.stack ? error.stack : error
     );
   }
-});
+}
+
+ipc.once('ready-for-updates', readyForUpdates);
+
+const TEN_MINUTES = 10 * 60 * 1000;
+setTimeout(readyForUpdates, TEN_MINUTES);
 
 function openReleaseNotes() {
   shell.openExternal(
@@ -433,6 +444,12 @@ function openSupportPage() {
 
 function openForums() {
   shell.openExternal('https://community.signalusers.org/');
+}
+
+function showKeyboardShortcuts() {
+  if (mainWindow) {
+    mainWindow.webContents.send('show-keyboard-shortcuts');
+  }
 }
 
 function setupWithImport() {
@@ -504,6 +521,8 @@ async function showSettingsWindow() {
     return;
   }
 
+  addDarkOverlay();
+
   const size = mainWindow.getSize();
   const options = {
     width: Math.min(500, size[0]),
@@ -511,7 +530,7 @@ async function showSettingsWindow() {
     resizable: false,
     title: locale.messages.signalDesktopPreferences.message,
     autoHideMenuBar: true,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#2090EA',
     show: false,
     modal: true,
     vibrancy: 'appearance-based',
@@ -537,7 +556,6 @@ async function showSettingsWindow() {
   });
 
   settingsWindow.once('ready-to-show', () => {
-    addDarkOverlay();
     settingsWindow.show();
   });
 }
@@ -555,9 +573,9 @@ async function showDebugLogWindow() {
     width: Math.max(size[0] - 100, MIN_WIDTH),
     height: Math.max(size[1] - 100, MIN_HEIGHT),
     resizable: false,
-    title: locale.messages.signalDesktopPreferences.message,
+    title: locale.messages.debugLog.message,
     autoHideMenuBar: true,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#2090EA',
     show: false,
     modal: true,
     vibrancy: 'appearance-based',
@@ -604,9 +622,9 @@ async function showPermissionsPopupWindow() {
     width: Math.min(400, size[0]),
     height: Math.min(150, size[1]),
     resizable: false,
-    title: locale.messages.signalDesktopPreferences.message,
+    title: locale.messages.allowAccess.message,
     autoHideMenuBar: true,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#2090EA',
     show: false,
     modal: true,
     vibrancy: 'appearance-based',
@@ -766,6 +784,7 @@ function setupMenu(options) {
   const menuOptions = Object.assign({}, options, {
     development,
     showDebugLog: showDebugLogWindow,
+    showKeyboardShortcuts,
     showWindow,
     showAbout,
     showSettings: showSettingsWindow,
@@ -870,9 +889,13 @@ app.on('web-contents-created', (createEvent, contents) => {
 });
 
 app.setAsDefaultProtocolClient('sgnl');
-app.on('open-url', (event, incomingUrl) => {
-  event.preventDefault();
-  handleSgnlLink(incomingUrl);
+app.on('will-finish-launching', () => {
+  // open-url must be set from within will-finish-launching for macOS
+  // https://stackoverflow.com/a/43949291
+  app.on('open-url', (event, incomingUrl) => {
+    event.preventDefault();
+    handleSgnlLink(incomingUrl);
+  });
 });
 
 ipc.on('set-badge-count', (event, count) => {
@@ -890,7 +913,14 @@ ipc.on('add-setup-menu-items', () => {
 });
 
 ipc.on('draw-attention', () => {
-  if (process.platform === 'win32' && mainWindow) {
+  if (!mainWindow) {
+    return;
+  }
+  if (disableFlashFrame) {
+    return;
+  }
+
+  if (process.platform === 'win32' || process.platform === 'linux') {
     mainWindow.flashFrame(true);
   }
 });
@@ -1005,6 +1035,19 @@ ipc.on('delete-all-data', () => {
   }
 });
 
+ipc.on('get-built-in-images', async () => {
+  try {
+    const images = await attachments.getBuiltInImages();
+    mainWindow.webContents.send('get-success-built-in-images', null, images);
+  } catch (error) {
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send('get-success-built-in-images', error.message);
+    } else {
+      console.error('Error handling get-built-in-images:', error.stack);
+    }
+  }
+});
+
 function getDataFromMainWindow(name, callback) {
   ipc.once(`get-success-${name}`, (_event, error, value) =>
     callback(error, value)
@@ -1043,10 +1086,15 @@ function installSettingsSetter(name) {
   });
 }
 
+function getIncomingUrl(argv) {
+  return argv.find(arg => arg.startsWith('sgnl://'));
+}
+
 function handleSgnlLink(incomingUrl) {
   const { host: command, query } = url.parse(incomingUrl);
   const args = qs.parse(query);
   if (command === 'addstickers' && mainWindow && mainWindow.webContents) {
+    console.log('Opening sticker pack from sgnl protocol link');
     const { pack_id: packId, pack_key: packKeyHex } = args;
     const packKey = Buffer.from(packKeyHex, 'hex').toString('base64');
     mainWindow.webContents.send('show-sticker-pack', { packId, packKey });

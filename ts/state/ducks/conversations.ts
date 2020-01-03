@@ -54,6 +54,7 @@ export type MessageType = {
   quote?: { author: string };
   received_at: number;
   hasSignalAccount?: boolean;
+  bodyPending?: boolean;
   attachments: Array<AttachmentType>;
   sticker: {
     data?: {
@@ -129,7 +130,7 @@ type ConversationRemovedActionType = {
     id: string;
   };
 };
-type ConversationUnloadedActionType = {
+export type ConversationUnloadedActionType = {
   type: 'CONVERSATION_UNLOADED';
   payload: {
     id: string;
@@ -138,6 +139,13 @@ type ConversationUnloadedActionType = {
 export type RemoveAllConversationsActionType = {
   type: 'CONVERSATIONS_REMOVE_ALL';
   payload: null;
+};
+export type MessageSelectedActionType = {
+  type: 'MESSAGE_SELECTED';
+  payload: {
+    messageId: string;
+    conversationId: string;
+  };
 };
 export type MessageChangedActionType = {
   type: 'MESSAGE_CHANGED';
@@ -160,7 +168,7 @@ export type MessagesAddedActionType = {
     conversationId: string;
     messages: Array<MessageType>;
     isNewMessage: boolean;
-    isFocused: boolean;
+    isActive: boolean;
   };
 };
 export type MessagesResetActionType = {
@@ -227,7 +235,7 @@ type ShowInboxActionType = {
   type: 'SHOW_INBOX';
   payload: null;
 };
-type ShowArchivedConversationsActionType = {
+export type ShowArchivedConversationsActionType = {
   type: 'SHOW_ARCHIVED_CONVERSATIONS';
   payload: null;
 };
@@ -238,6 +246,7 @@ export type ConversationActionType =
   | ConversationRemovedActionType
   | ConversationUnloadedActionType
   | RemoveAllConversationsActionType
+  | MessageSelectedActionType
   | MessageChangedActionType
   | MessageDeletedActionType
   | MessagesAddedActionType
@@ -263,6 +272,7 @@ export const actions = {
   conversationRemoved,
   conversationUnloaded,
   removeAllConversations,
+  selectMessage,
   messageDeleted,
   messageChanged,
   messagesAdded,
@@ -327,6 +337,16 @@ function removeAllConversations(): RemoveAllConversationsActionType {
   };
 }
 
+function selectMessage(messageId: string, conversationId: string) {
+  return {
+    type: 'MESSAGE_SELECTED',
+    payload: {
+      messageId,
+      conversationId,
+    },
+  };
+}
+
 function messageChanged(
   id: string,
   conversationId: string,
@@ -357,7 +377,7 @@ function messagesAdded(
   conversationId: string,
   messages: Array<MessageType>,
   isNewMessage: boolean,
-  isFocused: boolean
+  isActive: boolean
 ): MessagesAddedActionType {
   return {
     type: 'MESSAGES_ADDED',
@@ -365,7 +385,7 @@ function messagesAdded(
       conversationId,
       messages,
       isNewMessage,
-      isFocused,
+      isActive,
     },
   };
 }
@@ -531,6 +551,12 @@ function hasMessageHeightChanged(
     return true;
   }
 
+  const longMessageAttachmentLoaded =
+    previous.bodyPending && !message.bodyPending;
+  if (longMessageAttachmentLoaded) {
+    return true;
+  }
+
   const firstAttachmentNoLongerPending =
     previousAttachments[0] &&
     previousAttachments[0].pending &&
@@ -625,15 +651,33 @@ export function reducer(
     }
 
     const { messageIds } = existingConversation;
+    const selectedConversation =
+      state.selectedConversation !== id
+        ? state.selectedConversation
+        : undefined;
 
     return {
       ...state,
+      selectedConversation,
       messagesLookup: omit(state.messagesLookup, messageIds),
       messagesByConversation: omit(state.messagesByConversation, [id]),
     };
   }
   if (action.type === 'CONVERSATIONS_REMOVE_ALL') {
     return getEmptyState();
+  }
+  if (action.type === 'MESSAGE_SELECTED') {
+    const { messageId, conversationId } = action.payload;
+
+    if (state.selectedConversation !== conversationId) {
+      return state;
+    }
+
+    return {
+      ...state,
+      selectedMessage: messageId,
+      selectedMessageCounter: state.selectedMessageCounter + 1,
+    };
   }
   if (action.type === 'MESSAGE_CHANGED') {
     const { id, conversationId, data } = action.payload;
@@ -705,7 +749,9 @@ export function reducer(
         [conversationId]: {
           isLoadingMessages: false,
           scrollToMessageId,
-          scrollToMessageCounter: 0,
+          scrollToMessageCounter: existingConversation
+            ? existingConversation.scrollToMessageCounter + 1
+            : 0,
           messageIds,
           metrics,
           resetCounter,
@@ -870,12 +916,7 @@ export function reducer(
     };
   }
   if (action.type === 'MESSAGES_ADDED') {
-    const {
-      conversationId,
-      isFocused,
-      isNewMessage,
-      messages,
-    } = action.payload;
+    const { conversationId, isActive, isNewMessage, messages } = action.payload;
     const { messagesByConversation, messagesLookup } = state;
 
     const existingConversation = messagesByConversation[conversationId];
@@ -937,7 +978,7 @@ export function reducer(
     const newMessageIds = difference(newIds, existingConversation.messageIds);
     const { isNearBottom } = existingConversation;
 
-    if ((!isNearBottom || !isFocused) && !oldestUnread) {
+    if ((!isNearBottom || !isActive) && !oldestUnread) {
       const oldestId = newMessageIds.find(messageId => {
         const message = lookup[messageId];
 

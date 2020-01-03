@@ -145,7 +145,7 @@
   {
     "rule": "jQuery-$(",
     "path": "js/about_start.js",
-    "line": "$(document).on('keyup', e => {",
+    "line": "$(document).on('keydown', e => {",
     "lineNumber": 19,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -164,7 +164,7 @@
     "rule": "jQuery-load(",
     "path": "js/conversation_controller.js",
     "line": "    async load() {",
-    "lineNumber": 169,
+    "lineNumber": 171,
     "reasonCategory": "falseMatch",
     "updated": "2019-07-31T00:19:18.696Z"
   },
@@ -172,14 +172,14 @@
     "rule": "jQuery-load(",
     "path": "js/conversation_controller.js",
     "line": "      this._initialPromise = load();",
-    "lineNumber": 204,
+    "lineNumber": 216,
     "reasonCategory": "falseMatch",
     "updated": "2019-07-31T00:19:18.696Z"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/debug_log_start.js",
-    "line": "$(document).on('keyup', e => {",
+    "line": "$(document).on('keydown', e => {",
     "lineNumber": 4,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -231,22 +231,22 @@
     "rule": "jQuery-load(",
     "path": "js/modules/emojis.js",
     "line": "async function load() {",
-    "lineNumber": 13,
+    "lineNumber": 11,
     "reasonCategory": "falseMatch",
-    "updated": "2019-05-23T22:27:53.554Z"
+    "updated": "2019-10-31T17:28:08.684Z"
   },
   {
     "rule": "jQuery-load(",
     "path": "js/modules/stickers.js",
     "line": "async function load() {",
-    "lineNumber": 57,
+    "lineNumber": 66,
     "reasonCategory": "falseMatch",
     "updated": "2019-04-26T17:48:30.675Z"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/permissions_popup_start.js",
-    "line": "$(document).on('keyup', e => {",
+    "line": "$(document).on('keydown', e => {",
     "lineNumber": 3,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -273,7 +273,7 @@
   {
     "rule": "jQuery-$(",
     "path": "js/settings_start.js",
-    "line": "$(document).on('keyup', e => {",
+    "line": "$(document).on('keydown', e => {",
     "lineNumber": 3,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -301,25 +301,9 @@
     "rule": "jQuery-load(",
     "path": "js/signal_protocol_store.js",
     "line": "      await ConversationController.load();",
-    "lineNumber": 868,
+    "lineNumber": 894,
     "reasonCategory": "falseMatch",
     "updated": "2018-09-15T00:38:04.183Z"
-  },
-  {
-    "rule": "jQuery-wrap(",
-    "path": "js/util_worker_tasks.js",
-    "line": "  return dcodeIO.ByteBuffer.wrap(string, 'base64').toArrayBuffer();",
-    "lineNumber": 40,
-    "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
-  },
-  {
-    "rule": "jQuery-wrap(",
-    "path": "js/util_worker_tasks.js",
-    "line": "  return dcodeIO.ByteBuffer.wrap(arrayBuffer).toString('base64');",
-    "lineNumber": 43,
-    "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
   },
   {
     "rule": "DOM-innerHTML",
@@ -351,10 +335,10 @@
   {
     "rule": "jQuery-$(",
     "path": "js/views/confirmation_dialog_view.js",
-    "line": "      this.$('.cancel').focus();",
-    "lineNumber": 55,
+    "line": "      setTimeout(() => this.$('.cancel').focus(), 1);",
+    "lineNumber": 75,
     "reasonCategory": "usageTrusted",
-    "updated": "2018-09-19T21:59:32.770Z",
+    "updated": "2019-12-07T02:04:56.987Z",
     "reasonDetail": "Protected from arbitrary input"
   },
   {
@@ -477,150 +461,141 @@
     "rule": "jQuery-appendTo(",
     "path": "js/views/inbox_view.js",
     "line": "        view.$el.appendTo(this.el);",
-    "lineNumber": 32,
+    "lineNumber": 35,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "        this.$('.message').text(message);",
-    "lineNumber": 63,
+    "lineNumber": 69,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Hardcoded selector"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "        el: this.$('.conversation-stack'),",
-    "lineNumber": 80,
+    "lineNumber": 85,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Hardcoded selector"
   },
   {
     "rule": "jQuery-prependTo(",
     "path": "js/views/inbox_view.js",
     "line": "        this.appLoadingScreen.$el.prependTo(this.el);",
-    "lineNumber": 90,
+    "lineNumber": 92,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-append(",
     "path": "js/views/inbox_view.js",
     "line": "        .append(this.networkStatusView.render().el);",
-    "lineNumber": 107,
+    "lineNumber": 109,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-prependTo(",
     "path": "js/views/inbox_view.js",
     "line": "        banner.$el.prependTo(this.$el);",
-    "lineNumber": 111,
+    "lineNumber": 113,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-appendTo(",
     "path": "js/views/inbox_view.js",
     "line": "        toast.$el.appendTo(this.$el);",
-    "lineNumber": 117,
+    "lineNumber": 119,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "      this.$('.left-pane-placeholder').append(this.leftPaneView.el);",
-    "lineNumber": 137,
+    "lineNumber": 139,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-append(",
     "path": "js/views/inbox_view.js",
     "line": "      this.$('.left-pane-placeholder').append(this.leftPaneView.el);",
-    "lineNumber": 137,
+    "lineNumber": 139,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "      if (e && this.$(e.target).closest('.placeholder').length) {",
-    "lineNumber": 180,
+    "lineNumber": 189,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "      this.$('#header, .gutter').addClass('inactive');",
-    "lineNumber": 184,
+    "lineNumber": 193,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Hardcoded selector"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "      this.$('.conversation-stack').addClass('inactive');",
-    "lineNumber": 188,
+    "lineNumber": 197,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Hardcoded selector"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "      this.$('.conversation:first .menu').trigger('close');",
-    "lineNumber": 190,
+    "lineNumber": 199,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Hardcoded selector"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "      if (e && this.$(e.target).closest('.capture-audio').length > 0) {",
-    "lineNumber": 210,
+    "lineNumber": 219,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Known DOM elements"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/inbox_view.js",
     "line": "      this.$('.conversation:first .recorder').trigger('close');",
-    "lineNumber": 213,
+    "lineNumber": 222,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-07-31T00:19:18.696Z",
+    "updated": "2019-10-21T22:30:15.622Z",
     "reasonDetail": "Hardcoded selector"
   },
   {
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
     "line": "      this.$('#qr img').remove();",
-    "lineNumber": 133,
-    "reasonCategory": "usageTrusted",
-    "updated": "2018-09-19T21:59:32.770Z",
-    "reasonDetail": "Protected from arbitrary input"
-  },
-  {
-    "rule": "jQuery-$(",
-    "path": "js/views/install_view.js",
-    "line": "      this.$('#qr .container').show();",
     "lineNumber": 135,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -629,8 +604,17 @@
   {
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
+    "line": "      this.$('#qr .container').show();",
+    "lineNumber": 137,
+    "reasonCategory": "usageTrusted",
+    "updated": "2018-09-19T21:59:32.770Z",
+    "reasonDetail": "Protected from arbitrary input"
+  },
+  {
+    "rule": "jQuery-$(",
+    "path": "js/views/install_view.js",
     "line": "      if ($('#qr').length === 0) {",
-    "lineNumber": 139,
+    "lineNumber": 141,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -639,7 +623,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
     "line": "      this.$('#qr .container').hide();",
-    "lineNumber": 144,
+    "lineNumber": 146,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -648,15 +632,6 @@
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
     "line": "      this.qr = new QRCode(this.$('#qr')[0]).makeCode(url);",
-    "lineNumber": 145,
-    "reasonCategory": "usageTrusted",
-    "updated": "2018-09-19T21:59:32.770Z",
-    "reasonDetail": "Protected from arbitrary input"
-  },
-  {
-    "rule": "jQuery-$(",
-    "path": "js/views/install_view.js",
-    "line": "      this.$('#qr').addClass('ready');",
     "lineNumber": 147,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -665,8 +640,17 @@
   {
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
+    "line": "      this.$('#qr').addClass('ready');",
+    "lineNumber": 149,
+    "reasonCategory": "usageTrusted",
+    "updated": "2018-09-19T21:59:32.770Z",
+    "reasonDetail": "Protected from arbitrary input"
+  },
+  {
+    "rule": "jQuery-$(",
+    "path": "js/views/install_view.js",
     "line": "      this.$(DEVICE_NAME_SELECTOR).val(deviceName || window.getHostName());",
-    "lineNumber": 152,
+    "lineNumber": 154,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -675,7 +659,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
     "line": "      this.$('#link-phone').submit();",
-    "lineNumber": 157,
+    "lineNumber": 159,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -684,7 +668,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
     "line": "        this.$('#link-phone').submit(e => {",
-    "lineNumber": 167,
+    "lineNumber": 169,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -693,7 +677,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
     "line": "          let name = this.$(DEVICE_NAME_SELECTOR).val();",
-    "lineNumber": 171,
+    "lineNumber": 173,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -702,7 +686,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/install_view.js",
     "line": "            this.$(DEVICE_NAME_SELECTOR).focus();",
-    "lineNumber": 174,
+    "lineNumber": 176,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -827,7 +811,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/recorder_view.js",
     "line": "      this.$('.time').text(`${minutes}:${seconds}`);",
-    "lineNumber": 38,
+    "lineNumber": 49,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -836,7 +820,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/recorder_view.js",
     "line": "      $(window).off('blur', this.onSwitchAwayBound);",
-    "lineNumber": 69,
+    "lineNumber": 80,
     "reasonCategory": "usageTrusted",
     "updated": "2018-10-11T19:22:47.331Z",
     "reasonDetail": "Operating on already-existing DOM elements"
@@ -962,7 +946,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/settings_view.js",
     "line": "      this.$('.sync').text(i18n('syncNow'));",
-    "lineNumber": 183,
+    "lineNumber": 181,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -971,7 +955,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/settings_view.js",
     "line": "      this.$('.sync').attr('disabled', 'disabled');",
-    "lineNumber": 187,
+    "lineNumber": 185,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -980,7 +964,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/settings_view.js",
     "line": "      this.$('.synced_at').hide();",
-    "lineNumber": 199,
+    "lineNumber": 197,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -989,7 +973,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/settings_view.js",
     "line": "      this.$('.sync_failed').hide();",
-    "lineNumber": 204,
+    "lineNumber": 202,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -998,7 +982,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        this.$('input.number').val(number);",
-    "lineNumber": 21,
+    "lineNumber": 23,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1007,15 +991,6 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        el: this.$('#phone-number-input'),",
-    "lineNumber": 24,
-    "reasonCategory": "usageTrusted",
-    "updated": "2018-09-19T21:59:32.770Z",
-    "reasonDetail": "Protected from arbitrary input"
-  },
-  {
-    "rule": "jQuery-$(",
-    "path": "js/views/standalone_registration_view.js",
-    "line": "      this.$('#error').hide();",
     "lineNumber": 26,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -1024,8 +999,17 @@
   {
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
+    "line": "      this.$('#error').hide();",
+    "lineNumber": 28,
+    "reasonCategory": "usageTrusted",
+    "updated": "2018-09-19T21:59:32.770Z",
+    "reasonDetail": "Protected from arbitrary input"
+  },
+  {
+    "rule": "jQuery-$(",
+    "path": "js/views/standalone_registration_view.js",
     "line": "      const verificationCode = $('#code')",
-    "lineNumber": 37,
+    "lineNumber": 39,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1034,7 +1018,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "      this.$('#status').text(s);",
-    "lineNumber": 50,
+    "lineNumber": 52,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1043,7 +1027,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "      const verificationCode = $('#code')",
-    "lineNumber": 53,
+    "lineNumber": 55,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1052,7 +1036,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "      this.$('#error')",
-    "lineNumber": 64,
+    "lineNumber": 66,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1061,7 +1045,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "      if (this.$('#number-container').hasClass('valid')) {",
-    "lineNumber": 71,
+    "lineNumber": 73,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1070,7 +1054,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        this.$('#request-sms, #request-voice').prop('disabled', 'disabled');",
-    "lineNumber": 74,
+    "lineNumber": 76,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1079,15 +1063,6 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        this.$('#code').addClass('invalid');",
-    "lineNumber": 79,
-    "reasonCategory": "usageTrusted",
-    "updated": "2018-09-19T21:59:32.770Z",
-    "reasonDetail": "Protected from arbitrary input"
-  },
-  {
-    "rule": "jQuery-$(",
-    "path": "js/views/standalone_registration_view.js",
-    "line": "        this.$('#code').removeClass('invalid');",
     "lineNumber": 81,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
@@ -1096,8 +1071,17 @@
   {
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
+    "line": "        this.$('#code').removeClass('invalid');",
+    "lineNumber": 83,
+    "reasonCategory": "usageTrusted",
+    "updated": "2018-09-19T21:59:32.770Z",
+    "reasonDetail": "Protected from arbitrary input"
+  },
+  {
+    "rule": "jQuery-$(",
+    "path": "js/views/standalone_registration_view.js",
     "line": "      this.$('#error').hide();",
-    "lineNumber": 86,
+    "lineNumber": 88,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1106,7 +1090,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        this.$('#step2')",
-    "lineNumber": 92,
+    "lineNumber": 94,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1115,7 +1099,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        this.$('#number-container').addClass('invalid');",
-    "lineNumber": 96,
+    "lineNumber": 98,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1124,7 +1108,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "      $('#error').hide();",
-    "lineNumber": 101,
+    "lineNumber": 103,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1133,7 +1117,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        this.$('#step2')",
-    "lineNumber": 107,
+    "lineNumber": 109,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1142,7 +1126,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/standalone_registration_view.js",
     "line": "        this.$('#number-container').addClass('invalid');",
-    "lineNumber": 111,
+    "lineNumber": 113,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1154,6 +1138,15 @@
     "lineNumber": 21,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-15T00:38:04.183Z"
+  },
+  {
+    "rule": "jQuery-appendTo(",
+    "path": "js/views/toast_view.js",
+    "line": "    toast.$el.appendTo(el);",
+    "lineNumber": 34,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-06T19:56:38.557Z",
+    "reasonDetail": "Protected from arbitrary input"
   },
   {
     "rule": "jQuery-html(",
@@ -1177,7 +1170,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/whisper_view.js",
     "line": "        $('script[type=\"text/x-tmpl-mustache\"]').each((i, el) => {",
-    "lineNumber": 70,
+    "lineNumber": 71,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1186,7 +1179,7 @@
     "rule": "jQuery-$(",
     "path": "js/views/whisper_view.js",
     "line": "          const $el = $(el);",
-    "lineNumber": 71,
+    "lineNumber": 72,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-19T21:59:32.770Z",
     "reasonDetail": "Protected from arbitrary input"
@@ -1195,7 +1188,7 @@
     "rule": "jQuery-html(",
     "path": "js/views/whisper_view.js",
     "line": "          templates[id] = $el.html();",
-    "lineNumber": 73,
+    "lineNumber": 74,
     "reasonCategory": "usageTrusted",
     "updated": "2018-09-15T00:38:04.183Z",
     "reasonDetail": "Getting the value, not setting it"
@@ -1227,34 +1220,50 @@
   {
     "rule": "jQuery-wrap(",
     "path": "libtextsecure/message_receiver.js",
-    "line": "  Promise.resolve(dcodeIO.ByteBuffer.wrap(string, 'binary').toArrayBuffer());",
-    "lineNumber": 148,
+    "line": "  dcodeIO.ByteBuffer.wrap(string, 'binary').toArrayBuffer();",
+    "lineNumber": 62,
     "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
+    "updated": "2019-09-20T18:36:19.909Z"
   },
   {
     "rule": "jQuery-wrap(",
     "path": "libtextsecure/message_receiver.js",
-    "line": "  Promise.resolve(dcodeIO.ByteBuffer.wrap(arrayBuffer).toString('binary'));",
-    "lineNumber": 150,
+    "line": "  dcodeIO.ByteBuffer.wrap(arrayBuffer).toString('binary');",
+    "lineNumber": 64,
     "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
+    "updated": "2019-09-20T18:36:19.909Z"
+  },
+  {
+    "rule": "jQuery-wrap(",
+    "path": "libtextsecure/message_receiver.js",
+    "line": "  dcodeIO.ByteBuffer.wrap(string, 'base64').toArrayBuffer();",
+    "lineNumber": 66,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-09-20T18:36:19.909Z"
+  },
+  {
+    "rule": "jQuery-wrap(",
+    "path": "libtextsecure/message_receiver.js",
+    "line": "  dcodeIO.ByteBuffer.wrap(arrayBuffer).toString('base64');",
+    "lineNumber": 68,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-09-20T18:36:19.909Z"
   },
   {
     "rule": "jQuery-wrap(",
     "path": "libtextsecure/message_receiver.js",
     "line": "          const buffer = dcodeIO.ByteBuffer.wrap(ciphertext);",
-    "lineNumber": 827,
+    "lineNumber": 752,
     "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
+    "updated": "2019-10-21T22:30:15.622Z"
   },
   {
     "rule": "jQuery-wrap(",
     "path": "libtextsecure/message_receiver.js",
     "line": "        const buffer = dcodeIO.ByteBuffer.wrap(ciphertext);",
-    "lineNumber": 852,
+    "lineNumber": 777,
     "reasonCategory": "falseMatch",
-    "updated": "2018-09-19T18:13:29.628Z"
+    "updated": "2019-10-21T22:30:15.622Z"
   },
   {
     "rule": "jQuery-wrap(",
@@ -1283,18 +1292,26 @@
   {
     "rule": "jQuery-wrap(",
     "path": "libtextsecure/sync_request.js",
-    "line": "    wrap(sender.sendRequestContactSyncMessage(sendOptions))",
+    "line": "    wrap(sender.sendRequestBlockSyncMessage(sendOptions));",
     "lineNumber": 36,
     "reasonCategory": "falseMatch",
-    "updated": "2018-10-05T23:12:28.961Z"
+    "updated": "2019-12-03T00:28:08.683Z"
+  },
+  {
+    "rule": "jQuery-wrap(",
+    "path": "libtextsecure/sync_request.js",
+    "line": "    wrap(sender.sendRequestContactSyncMessage(sendOptions))",
+    "lineNumber": 39,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-12-03T00:28:08.683Z"
   },
   {
     "rule": "jQuery-wrap(",
     "path": "libtextsecure/sync_request.js",
     "line": "        return wrap(sender.sendRequestGroupSyncMessage(sendOptions));",
-    "lineNumber": 39,
+    "lineNumber": 42,
     "reasonCategory": "falseMatch",
-    "updated": "2018-10-05T23:12:28.961Z"
+    "updated": "2019-12-03T00:28:08.683Z"
   },
   {
     "rule": "jQuery-wrap(",
@@ -3353,10 +3370,50 @@
     "updated": "2019-04-10T19:08:25.356Z"
   },
   {
+    "rule": "jQuery-load(",
+    "path": "node_modules/electron-notarize/node_modules/debug/dist/debug.js",
+    "line": "        createDebug.enable(createDebug.load());",
+    "lineNumber": 721,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-10-10T18:29:02.491Z"
+  },
+  {
+    "rule": "jQuery-load(",
+    "path": "node_modules/electron-notarize/node_modules/debug/dist/debug.js",
+    "line": "        function load() {",
+    "lineNumber": 855,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-10-10T18:29:02.491Z"
+  },
+  {
+    "rule": "jQuery-load(",
+    "path": "node_modules/electron-notarize/node_modules/debug/src/browser.js",
+    "line": "function load() {",
+    "lineNumber": 211,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-10-10T18:29:02.491Z"
+  },
+  {
+    "rule": "jQuery-load(",
+    "path": "node_modules/electron-notarize/node_modules/debug/src/common.js",
+    "line": "\tcreateDebug.enable(createDebug.load());",
+    "lineNumber": 261,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-10-10T18:29:02.491Z"
+  },
+  {
+    "rule": "jQuery-load(",
+    "path": "node_modules/electron-notarize/node_modules/debug/src/node.js",
+    "line": "function load() {",
+    "lineNumber": 216,
+    "reasonCategory": "falseMatch",
+    "updated": "2019-10-10T18:29:02.491Z"
+  },
+  {
     "rule": "eval",
     "path": "node_modules/electron/electron.d.ts",
     "line": "    eval(code: string): void;",
-    "lineNumber": 2137,
+    "lineNumber": 2136,
     "reasonCategory": "falseMatch",
     "updated": "2019-08-15T17:10:42.360Z"
   },
@@ -3364,7 +3421,7 @@
     "rule": "jQuery-append(",
     "path": "node_modules/electron/electron.d.ts",
     "line": "    append(menuItem: MenuItem): void;",
-    "lineNumber": 3748,
+    "lineNumber": 3760,
     "reasonCategory": "falseMatch",
     "updated": "2019-08-15T17:10:42.360Z"
   },
@@ -3624,7 +3681,7 @@
     "rule": "eval",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
     "line": "      var a = !eval('\"use strict\";let x = 1; function f() { return typeof x; };f() == \"number\";');",
-    "lineNumber": 232,
+    "lineNumber": 233,
     "reasonCategory": "usageTrusted",
     "updated": "2018-11-27T01:31:13.384Z",
     "reasonDetail": "Hard-coded string used for testing capabilities."
@@ -3633,7 +3690,7 @@
     "rule": "eval",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
     "line": "  eval(a);",
-    "lineNumber": 267,
+    "lineNumber": 268,
     "reasonCategory": "notExercisedByOurApp",
     "updated": "2018-11-27T01:31:13.384Z",
     "reasonDetail": "Used to load dependencies; parent function loadModuleFromSource_ is used in one place only."
@@ -3641,17 +3698,8 @@
   {
     "rule": "eval",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
-    "line": "        eval(g + \"\\n//# sourceURL=\" + f);",
-    "lineNumber": 298,
-    "reasonCategory": "notExercisedByOurApp",
-    "updated": "2019-04-12T00:50:12.124Z",
-    "reasonDetail": "Used for google closure compiler transpilation scenarios"
-  },
-  {
-    "rule": "eval",
-    "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
     "line": "          goog.global.eval(\"var _evalTest_ = 1;\");",
-    "lineNumber": 444,
+    "lineNumber": 445,
     "reasonCategory": "usageTrusted",
     "updated": "2019-04-12T00:50:12.124Z",
     "reasonDetail": "Hard-coded string used for testing capabilities"
@@ -3660,7 +3708,7 @@
     "rule": "eval",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
     "line": "        goog.global.eval(a);",
-    "lineNumber": 458,
+    "lineNumber": 459,
     "reasonCategory": "notExercisedByOurApp",
     "updated": "2018-11-27T01:31:13.384Z",
     "reasonDetail": "More transpilation logic"
@@ -3668,16 +3716,16 @@
   {
     "rule": "jQuery-$(",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
-    "line": "  b && (a = a.replace(/\\{\\$([^}]+)}/g, function(a, d) {",
-    "lineNumber": 498,
+    "line": "  b && (a = a.replace(/\\{\\$([^}]+)}/g, function(a, c) {",
+    "lineNumber": 500,
     "reasonCategory": "falseMatch",
-    "updated": "2018-11-27T01:31:13.384Z"
+    "updated": "2019-12-03T19:24:21.611Z"
   },
   {
     "rule": "eval",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
     "line": "      return !!eval(a);",
-    "lineNumber": 640,
+    "lineNumber": 642,
     "reasonCategory": "notExercisedByOurApp",
     "updated": "2018-11-27T01:31:13.384Z",
     "reasonDetail": "More transpilation logic"
@@ -3686,7 +3734,7 @@
     "rule": "jQuery-load(",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
     "line": "        d.load(f);",
-    "lineNumber": 796,
+    "lineNumber": 794,
     "reasonCategory": "notExercisedByOurApp",
     "updated": "2019-04-12T00:50:12.124Z",
     "reasonDetail": "Part of their google closure 'debug loader'"
@@ -3703,11 +3751,29 @@
   {
     "rule": "DOM-innerHTML",
     "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
-    "line": "    e || (d.innerHTML = a + \" \", e = d.firstChild.nodeValue.slice(0, -1));",
-    "lineNumber": 2045,
-    "reasonCategory": "notExercisedByOurApp",
-    "updated": "2018-11-27T01:31:13.384Z",
-    "reasonDetail": "An odd technique of unescaping content by putting it into the dom"
+    "line": "  a.innerHTML = goog.html.SafeHtml.unwrapTrustedHTML(goog.html.SafeHtml.EMPTY);",
+    "lineNumber": 3448,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-12-03T19:24:21.611Z",
+    "reasonDetail": "HTML is escaped"
+  },
+  {
+    "rule": "DOM-innerHTML",
+    "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
+    "line": "  a.innerHTML = goog.html.SafeHtml.unwrapTrustedHTML(b);",
+    "lineNumber": 3457,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-12-03T19:24:21.611Z",
+    "reasonDetail": "HTML is escaped"
+  },
+  {
+    "rule": "DOM-outerHTML",
+    "path": "node_modules/google-libphonenumber/dist/libphonenumber.js",
+    "line": "  a.outerHTML = goog.html.SafeHtml.unwrapTrustedHTML(b);",
+    "lineNumber": 3469,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-12-03T19:24:21.611Z",
+    "reasonDetail": "HTML is escaped"
   },
   {
     "rule": "DOM-innerHTML",
@@ -7475,34 +7541,43 @@
     "rule": "DOM-innerHTML",
     "path": "ts/components/CompositionArea.tsx",
     "line": "  el.innerHTML = '';",
-    "lineNumber": 65,
+    "lineNumber": 71,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-08-01T14:10:37.481Z",
+    "updated": "2019-12-16T14:36:25.614ZZ",
     "reasonDetail": "Our code, no user input, only clearing out the dom"
   },
   {
     "rule": "React-createRef",
-    "path": "ts/components/Lightbox.js",
-    "line": "        this.videoRef = react_1.default.createRef();",
-    "lineNumber": 185,
+    "path": "ts/components/LeftPane.js",
+    "line": "        this.listRef = react_1.default.createRef();",
+    "lineNumber": 15,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-03-09T00:08:44.242Z",
-    "reasonDetail": "Used to auto-start playback on videos"
+    "updated": "2019-11-05T01:14:21.081Z",
+    "reasonDetail": "Used for focus management"
   },
   {
     "rule": "React-createRef",
-    "path": "ts/components/Lightbox.tsx",
-    "line": "    this.videoRef = React.createRef();",
-    "lineNumber": 181,
+    "path": "ts/components/Lightbox.js",
+    "line": "        this.containerRef = react_1.default.createRef();",
+    "lineNumber": 141,
     "reasonCategory": "usageTrusted",
-    "updated": "2019-03-09T00:08:44.242Z",
-    "reasonDetail": "Used to auto-start playback on videos"
+    "updated": "2019-11-06T19:56:38.557Z",
+    "reasonDetail": "Used to double-check outside clicks"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/Lightbox.js",
+    "line": "        this.focusRef = react_1.default.createRef();",
+    "lineNumber": 143,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-06T19:56:38.557Z",
+    "reasonDetail": "Used to manage focus"
   },
   {
     "rule": "React-createRef",
     "path": "ts/components/MainHeader.js",
     "line": "        this.inputRef = react_1.default.createRef();",
-    "lineNumber": 87,
+    "lineNumber": 144,
     "reasonCategory": "usageTrusted",
     "updated": "2019-08-09T21:17:57.798Z",
     "reasonDetail": "Used only to set focus"
@@ -7511,7 +7586,7 @@
     "rule": "React-createRef",
     "path": "ts/components/MainHeader.tsx",
     "line": "    this.inputRef = React.createRef();",
-    "lineNumber": 53,
+    "lineNumber": 65,
     "reasonCategory": "usageTrusted",
     "updated": "2019-08-09T21:17:57.798Z",
     "reasonDetail": "Used only to set focus"
@@ -7520,7 +7595,7 @@
     "rule": "React-createRef",
     "path": "ts/components/SearchResults.js",
     "line": "        this.listRef = react_1.default.createRef();",
-    "lineNumber": 22,
+    "lineNumber": 26,
     "reasonCategory": "usageTrusted",
     "updated": "2019-08-09T00:44:31.008Z",
     "reasonDetail": "SearchResults needs to interact with its child List directly"
@@ -7545,12 +7620,84 @@
   },
   {
     "rule": "React-createRef",
+    "path": "ts/components/conversation/InlineNotificationWrapper.js",
+    "line": "        this.focusRef = react_1.default.createRef();",
+    "lineNumber": 10,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-06T19:56:38.557Z",
+    "reasonDetail": "Used to manage focus"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/conversation/InlineNotificationWrapper.tsx",
+    "line": "  public focusRef: React.RefObject<HTMLDivElement> = React.createRef();",
+    "lineNumber": 11,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-06T19:56:38.557Z",
+    "reasonDetail": "Used to manage focus"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/conversation/Message.js",
+    "line": "        this.focusRef = react_1.default.createRef();",
+    "lineNumber": 32,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-01T22:46:33.013Z",
+    "reasonDetail": "Used for setting focus only"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/conversation/Message.tsx",
+    "line": "  public focusRef: React.RefObject<HTMLDivElement> = React.createRef();",
+    "lineNumber": 155,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-01T22:46:33.013Z",
+    "reasonDetail": "Used for setting focus only"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/conversation/MessageDetail.js",
+    "line": "        this.focusRef = react_1.default.createRef();",
+    "lineNumber": 15,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-01T22:46:33.013Z",
+    "reasonDetail": "Used for setting focus only"
+  },
+  {
+    "rule": "React-createRef",
     "path": "ts/components/conversation/Timeline.js",
     "line": "        this.listRef = react_1.default.createRef();",
     "lineNumber": 27,
     "reasonCategory": "usageTrusted",
     "updated": "2019-07-31T00:19:18.696Z",
     "reasonDetail": "Timeline needs to interact with its child List directly"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/conversation/media-gallery/MediaGallery.js",
+    "line": "        this.focusRef = react_1.default.createRef();",
+    "lineNumber": 25,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-01T22:46:33.013Z",
+    "reasonDetail": "Used for setting focus only"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/conversation/media-gallery/MediaGallery.tsx",
+    "line": "  public readonly focusRef: React.RefObject<HTMLDivElement> = React.createRef();",
+    "lineNumber": 66,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-01T22:46:33.013Z",
+    "reasonDetail": "Used for setting focus only"
+  },
+  {
+    "rule": "React-createRef",
+    "path": "ts/components/stickers/StickerManager.js",
+    "line": "    const focusRef = React.createRef();",
+    "lineNumber": 20,
+    "reasonCategory": "usageTrusted",
+    "updated": "2019-11-21T06:13:49.384Z",
+    "reasonDetail": "Used for setting focus only"
   },
   {
     "rule": "jQuery-wrap(",

@@ -11,12 +11,7 @@ const { app } = remote;
 const { systemPreferences } = remote.require('electron');
 
 const browserWindow = remote.getCurrentWindow();
-let focusHandlers = [];
-browserWindow.on('focus', () => focusHandlers.forEach(handler => handler()));
-window.registerForFocus = handler => focusHandlers.push(handler);
-window.unregisterForFocus = handler => {
-  focusHandlers = focusHandlers.filter(item => item !== handler);
-};
+window.isFocused = () => browserWindow.isFocused();
 
 // Waiting for clients to implement changes on receive side
 window.ENABLE_STICKER_SEND = true;
@@ -133,17 +128,14 @@ ipc.on('set-up-as-standalone', () => {
 window.showSettings = () => ipc.send('show-settings');
 window.showPermissionsPopup = () => ipc.send('show-permissions-popup');
 
+ipc.on('show-keyboard-shortcuts', () => {
+  window.Events.showKeyboardShortcuts();
+});
 ipc.on('add-dark-overlay', () => {
-  const { addDarkOverlay } = window.Events;
-  if (addDarkOverlay) {
-    addDarkOverlay();
-  }
+  window.Events.addDarkOverlay();
 });
 ipc.on('remove-dark-overlay', () => {
-  const { removeDarkOverlay } = window.Events;
-  if (removeDarkOverlay) {
-    removeDarkOverlay();
-  }
+  window.Events.removeDarkOverlay();
 });
 
 installGetter('device-name', 'getDeviceName');
@@ -165,12 +157,24 @@ window.getMediaPermissions = () =>
   new Promise((resolve, reject) => {
     ipc.once('get-success-media-permissions', (_event, error, value) => {
       if (error) {
-        return reject(error);
+        return reject(new Error(error));
       }
 
       return resolve(value);
     });
     ipc.send('get-media-permissions');
+  });
+
+window.getBuiltInImages = () =>
+  new Promise((resolve, reject) => {
+    ipc.once('get-success-built-in-images', (_event, error, value) => {
+      if (error) {
+        return reject(new Error(error));
+      }
+
+      return resolve(value);
+    });
+    ipc.send('get-built-in-images');
   });
 
 installGetter('is-primary', 'isPrimary');
